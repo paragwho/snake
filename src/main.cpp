@@ -52,10 +52,13 @@ class Snake {
   Vector2 direction = {0, -1};
   deque<Vector2> body = {{12, 11}, {12, 12}, {12, 13}};
 
+  bool directionChanged = false;
+
 public:
   void move() {
     body.push_front(Vector2Add(body.front(), direction));
     body.pop_back();
+    directionChanged = false;
   }
 
   void grow() { body.push_back(body.back()); }
@@ -75,17 +78,25 @@ public:
   Vector2 getHeadPosition() const { return body.front(); }
 
   void handleInput() {
+    if (directionChanged) {
+      return;
+    }
+
     if (IsKeyPressed(KEY_UP) && direction.y != 1) {
       direction = {0, -1};
+      directionChanged = true;
     }
     if (IsKeyPressed(KEY_DOWN) && direction.y != -1) {
       direction = {0, 1};
+      directionChanged = true;
     }
     if (IsKeyPressed(KEY_LEFT) && direction.x != 1) {
       direction = {-1, 0};
+      directionChanged = true;
     }
     if (IsKeyPressed(KEY_RIGHT) && direction.x != -1) {
       direction = {1, 0};
+      directionChanged = true;
     }
   }
 
