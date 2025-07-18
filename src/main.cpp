@@ -1,19 +1,23 @@
 #include <deque>
 #include <raylib.h>
 #include <raymath.h>
-#include <string>
 
 using namespace std;
 
 const int CELL_SIZE = 30;
 const int CELL_COUNT = 25;
-const int OFFSET = 75;
+const double MOVE_INTERVAL = 0.12;
+
+const int GAP_TO_BORDER = 1;
+const int TITLE_FONT_SIZE = 80;
+const int SCORE_FONT_SIZE = 40;
+const int INSTRUCTION_FONT_SIZE = 40;
+const int SPACING = 10;
+
+enum GameState { PLAY, GAMEOVER };
 
 Color myGreen = {173, 204, 96, 255};
 Color myDarkGreen = {43, 51, 24, 255};
-
-string gameState = "playing";
-int appleCount = 0;
 
 struct Timer {
   double lastTime = 0;
@@ -28,161 +32,149 @@ struct Timer {
   }
 };
 
-class Food {
+class Apple {
+  Vector2 position;
+
 public:
-  Vector2 position = {12, 6};
+  Apple(Vector2 Position) : position(Position) {}
 
-  void reset() { position = {12, 6}; }
-
-  void draw() {
-    DrawRectangle(OFFSET + CELL_SIZE * position.x,
-                  OFFSET + CELL_SIZE * position.y, CELL_SIZE, CELL_SIZE, RED);
+  void draw() const {
+    DrawRectangle(CELL_SIZE * position.x, CELL_SIZE * position.y, CELL_SIZE,
+                  CELL_SIZE, RED);
   }
 
-  void update(Vector2 newPosition) { position = newPosition; }
+  Vector2 getPosition() const { return position; }
+
+  void setPosition(Vector2 Position) { position = Position; }
 };
 
 class Snake {
-public:
-  Vector2 direction = {1, 0};
-  deque<Vector2> body = {{12, 12}, {11, 12}, {10, 12}};
-  Timer moveSnake;
+  Vector2 direction = {0, -1};
+  deque<Vector2> body = {{12, 11}, {12, 12}, {12, 13}};
 
-  void grow() { body.push_back(Vector2Add(body.back(), direction)); }
+public:
+  void move() {
+    body.push_front(Vector2Add(body.front(), direction));
+    body.pop_back();
+  }
+
+  void grow() { body.push_back(body.back()); }
+
+  void draw() const {
+    for (int i = 0; i < body.size(); i++) {
+      DrawRectangle(body[i].x * CELL_SIZE, body[i].y * CELL_SIZE, CELL_SIZE,
+                    CELL_SIZE, myDarkGreen);
+    }
+  }
 
   void reset() {
-    direction = {1, 0};
-    body = {{12, 12}, {11, 12}, {10, 12}};
+    direction = {0, -1};
+    body = {{12, 11}, {12, 12}, {12, 13}};
   }
 
-  void draw() {
-    for (int i = 0; i < body.size(); i++) {
-      DrawRectangle(OFFSET + body[i].x * CELL_SIZE,
-                    OFFSET + body[i].y * CELL_SIZE, CELL_SIZE, CELL_SIZE,
-                    myDarkGreen);
+  Vector2 getHeadPosition() const { return body.front(); }
+
+  void handleInput() {
+    if (IsKeyPressed(KEY_UP) && direction.y != 1) {
+      direction = {0, -1};
+    }
+    if (IsKeyPressed(KEY_DOWN) && direction.y != -1) {
+      direction = {0, 1};
+    }
+    if (IsKeyPressed(KEY_LEFT) && direction.x != 1) {
+      direction = {-1, 0};
+    }
+    if (IsKeyPressed(KEY_RIGHT) && direction.x != -1) {
+      direction = {1, 0};
     }
   }
 
-  void update() {
-    if (moveSnake.isTriggered(0.12)) {
-      body.pop_back();
-      body.push_front(Vector2Add(body.front(), direction));
-    }
-  }
-};
-
-class Game {
-public:
-  Food food = Food();
-  Snake snake = Snake();
-
-  bool isFoodEaten() {
-    if (Vector2Equals(food.position, snake.body.front())) {
-      return true;
-    }
-    return false;
-  }
-
-  Vector2 randomPosition() {
-    return {(float)GetRandomValue(2, 22), (float)GetRandomValue(2, 22)};
-  }
-
-  bool isValidPosition(Vector2 position) {
-    for (int i = 0; i < snake.body.size(); i++) {
-      if (Vector2Equals(position, snake.body[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  Vector2 generateValidPosition() {
-    Vector2 position = randomPosition();
-    do {
-      position = randomPosition();
-    } while (!isValidPosition(position));
-
-    return position;
-  }
-
-  bool collideSelf() {
-    for (int i = 1; i < snake.body.size(); i++) {
-      if (Vector2Equals(snake.body.front(), snake.body[i])) {
+  bool checkSelfCollision() const {
+    for (int i = 1; i < body.size(); i++) {
+      if (Vector2Equals(body.front(), body[i])) {
         return true;
       }
     }
     return false;
   }
 
-  bool collideBoundary() {
-    Vector2 snakeHead = snake.body.front();
-    if (snakeHead.x < 0 || snakeHead.x > 24 || snakeHead.y < 0 ||
-        snakeHead.y > 24) {
-      return true;
+  bool checkBoundaryCollision() const {
+    return (getHeadPosition().x < 0 || getHeadPosition().x > CELL_COUNT - 1 ||
+            getHeadPosition().y < 0 || getHeadPosition().y > CELL_COUNT - 1);
+  }
+
+  bool checkCollisionAt(Vector2 position) const {
+    for (int i = 0; i < body.size(); i++) {
+      if (Vector2Equals(position, body[i])) {
+        return true;
+      }
     }
     return false;
   }
+};
 
-  void reset() {
-    food.reset();
-    snake.reset();
-    appleCount = 0;
-    gameState = "playing";
+namespace Spawner {
+Vector2 randomPosition() {
+  return {(float)GetRandomValue(0, CELL_COUNT - 1),
+          (float)GetRandomValue(0, CELL_COUNT - 1)};
+}
+
+Vector2 generateValidPosition(Snake &snake) {
+  Vector2 position = randomPosition();
+  do {
+    position = randomPosition();
+  } while (snake.checkCollisionAt(position));
+
+  return position;
+}
+}; // namespace Spawner
+
+class Game {
+  Snake snake = Snake();
+  Apple apple = Apple(Spawner::generateValidPosition(snake));
+  Timer moveSnake;
+
+  bool isAppleEaten(Apple &apple, Snake &snake) {
+    return Vector2Equals(apple.getPosition(), snake.getHeadPosition());
   }
 
-  void gameover() {
-    drawTitle();
-    drawBoundary();
-    DrawText("GAME OVER", OFFSET + 6 * CELL_SIZE, OFFSET + 7 * CELL_SIZE, 72,
-             myDarkGreen);
-    DrawText(TextFormat("SCORE : %i", appleCount), OFFSET + 8 * CELL_SIZE,
-             OFFSET + 12 * CELL_SIZE, 54, myDarkGreen);
-    DrawText("PRESS ENTER TO RESTART", OFFSET + 4 * CELL_SIZE,
-             OFFSET + 16 * CELL_SIZE, 36, myDarkGreen);
-  }
-
-  void drawTitle() { DrawText("SNAKE", 20, 16, 50, myDarkGreen); }
-
-  void drawScore() {
-    DrawText(TextFormat("SCORE : %i", appleCount), 20,
-             CELL_SIZE * CELL_COUNT + 100, 36, myDarkGreen);
-  }
-
-  void drawBoundary() {
-    DrawRectangleLinesEx(Rectangle{OFFSET - 5, OFFSET - 5,
-                                   CELL_SIZE * CELL_COUNT + 10,
-                                   CELL_SIZE * CELL_COUNT + 10},
-                         5, myDarkGreen);
-  }
-
-  void draw() {
-    food.draw();
-    snake.draw();
-    drawTitle();
-    drawScore();
-    drawBoundary();
-  }
+public:
+  int appleCount = 0;
+  GameState gameState = PLAY;
 
   void update() {
-    if (isFoodEaten()) {
-      snake.grow();
-      food.update(generateValidPosition());
-      appleCount++;
-    }
+    snake.handleInput();
 
-    if (collideSelf() || collideBoundary()) {
-      gameState = "gameover";
-    }
+    if (moveSnake.isTriggered(MOVE_INTERVAL)) {
+      snake.move();
 
-    else {
-      snake.update();
+      if (snake.checkSelfCollision() || snake.checkBoundaryCollision()) {
+        gameState = GAMEOVER;
+      }
+
+      if (isAppleEaten(apple, snake)) {
+        appleCount++;
+        snake.grow();
+        apple.setPosition(Spawner::generateValidPosition(snake));
+      }
     }
+  }
+
+  void draw() const {
+    apple.draw();
+    snake.draw();
+  }
+
+  void reset() {
+    snake.reset();
+    apple.setPosition(Spawner::generateValidPosition(snake));
+    appleCount = 0;
+    gameState = PLAY;
   }
 };
 
 int main() {
-  InitWindow(CELL_SIZE * CELL_COUNT + 2 * OFFSET,
-             CELL_SIZE * CELL_COUNT + 2 * OFFSET, "Snake");
+  InitWindow(CELL_SIZE * CELL_COUNT, CELL_SIZE * CELL_COUNT, "Snake");
   SetTargetFPS(60);
 
   Game game = Game();
@@ -190,30 +182,43 @@ int main() {
   while (!WindowShouldClose()) {
     BeginDrawing();
 
-    if (IsKeyPressed(KEY_UP) && game.snake.direction.y != 1) {
-      game.snake.direction = {0, -1};
-    }
-    if (IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1) {
-      game.snake.direction = {0, 1};
-    }
-    if (IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1) {
-      game.snake.direction = {-1, 0};
-    }
-    if (IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1) {
-      game.snake.direction = {1, 0};
-    }
-
     ClearBackground(myGreen);
 
-    if (gameState == "playing") {
+    if (game.gameState == PLAY) {
       game.update();
       game.draw();
-    } else if (gameState == "gameover") {
-      game.gameover();
+    } else if (game.gameState == GAMEOVER) {
+      DrawText(
+          "GAME OVER",
+          (CELL_SIZE * CELL_COUNT - MeasureText("GAME OVER", TITLE_FONT_SIZE)) /
+              2,
+          (CELL_SIZE * CELL_COUNT - TITLE_FONT_SIZE) / 2 - SPACING * 4,
+          TITLE_FONT_SIZE, myDarkGreen);
+
+      DrawText(
+          "Press Enter to play again",
+          (CELL_SIZE * CELL_COUNT -
+           MeasureText("Press Enter to play again", INSTRUCTION_FONT_SIZE)) /
+              2,
+          (CELL_SIZE * CELL_COUNT - INSTRUCTION_FONT_SIZE) / 2 + SPACING * 4,
+          INSTRUCTION_FONT_SIZE, myDarkGreen);
+
       if (IsKeyPressed(KEY_ENTER)) {
         game.reset();
       }
     }
+
+    const char *scoreText;
+
+    if (game.gameState == PLAY) {
+      scoreText = TextFormat("%i", game.appleCount);
+    } else {
+      scoreText = TextFormat("Score: %i", game.appleCount);
+    }
+
+    DrawText(scoreText, CELL_SIZE * GAP_TO_BORDER,
+             CELL_SIZE * (CELL_COUNT - GAP_TO_BORDER) - SCORE_FONT_SIZE / 2,
+             SCORE_FONT_SIZE, myDarkGreen);
 
     EndDrawing();
   }

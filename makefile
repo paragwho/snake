@@ -36,7 +36,9 @@ $(BIN_DIR):
 
 # Clean artifacts and executable
 clean:
-	-del $(subst /,\,$(OUT)) $(subst /,\,$(OBJ)) $(subst /,\,$(DEP))
+	del $(subst /,\,$(OUT))
+	del $(subst /,\,$(OBJ))
+	del $(subst /,\,$(DEP))
 
 # Run the game
 run: $(OUT)
