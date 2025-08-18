@@ -13,8 +13,8 @@ OUT = $(BIN_DIR)/main.exe
 
 # Compiler and flags
 CXX = clang++
-CXXFLAGS = -I"$(INCLUDE_DIR)" -Wall -MMD -MP
-LDFLAGS = -L"$(LIB_DIR)" -lraylib -lopengl32 -lgdi32 -lwinmm
+CXXFLAGS = -I"$(INCLUDE_DIR)" -O3 -Wall -MMD -MP
+LDFLAGS = -L"$(LIB_DIR)" -mwindows -lraylib -lopengl32 -lgdi32 -lwinmm
 
 # Targets
 .PHONY: all clean run
@@ -28,10 +28,10 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Create directories if missing
-$(BUILD_DIR):
+$(BIN_DIR):
 	mkdir $@
 
-$(BIN_DIR):
+$(BUILD_DIR):
 	mkdir $@
 
 # Clean artifacts and executable

@@ -1,6 +1,6 @@
+#include "raylib.h"
+#include "raymath.h"
 #include <deque>
-#include <raylib.h>
-#include <raymath.h>
 
 using namespace std;
 
@@ -13,6 +13,10 @@ const int TITLE_FONT_SIZE = 80;
 const int SCORE_FONT_SIZE = 40;
 const int INSTRUCTION_FONT_SIZE = 40;
 const int SPACING = 10;
+
+const Vector2 SNAKE_INITIAL_POSITION = {12, 11};
+const Vector2 SNAKE_INITIAL_DIRECTION = {0, -1};
+const int SNAKE_INITIAL_LENGTH = 3;
 
 enum GameState { PLAY, GAMEOVER };
 
@@ -49,12 +53,22 @@ public:
 };
 
 class Snake {
-  Vector2 direction = {0, -1};
-  deque<Vector2> body = {{12, 11}, {12, 12}, {12, 13}};
-
+  Vector2 direction = SNAKE_INITIAL_DIRECTION;
+  deque<Vector2> body;
   bool directionChanged = false;
 
+  void initializeBody() {
+    body.clear();
+    for (int i = 0; i < SNAKE_INITIAL_LENGTH; i++) {
+      body.push_back(Vector2Add(SNAKE_INITIAL_POSITION, Vector2Scale(Vector2Negate(SNAKE_INITIAL_DIRECTION), i)));
+    }
+  }
+
 public:
+  Snake() {
+    initializeBody();
+  }
+
   void move() {
     body.push_front(Vector2Add(body.front(), direction));
     body.pop_back();
@@ -71,8 +85,8 @@ public:
   }
 
   void reset() {
-    direction = {0, -1};
-    body = {{12, 11}, {12, 12}, {12, 13}};
+    direction = SNAKE_INITIAL_DIRECTION;
+    initializeBody();
   }
 
   Vector2 getHeadPosition() const { return body.front(); }
@@ -141,8 +155,8 @@ Vector2 generateValidPosition(Snake &snake) {
 }; // namespace Spawner
 
 class Game {
-  Snake snake = Snake();
-  Apple apple = Apple(Spawner::generateValidPosition(snake));
+  Snake snake;
+  Apple apple{Spawner::generateValidPosition(snake)};
   Timer moveSnake;
 
   bool isAppleEaten(Apple &apple, Snake &snake) {
@@ -188,7 +202,7 @@ int main() {
   InitWindow(CELL_SIZE * CELL_COUNT, CELL_SIZE * CELL_COUNT, "Snake");
   SetTargetFPS(60);
 
-  Game game = Game();
+  Game game;
 
   while (!WindowShouldClose()) {
     BeginDrawing();
@@ -228,8 +242,8 @@ int main() {
     }
 
     DrawText(scoreText, CELL_SIZE * GAP_TO_BORDER,
-             CELL_SIZE * (CELL_COUNT - GAP_TO_BORDER) - SCORE_FONT_SIZE / 2,
-             SCORE_FONT_SIZE, myDarkGreen);
+             CELL_SIZE * (CELL_COUNT - GAP_TO_BORDER * 2), SCORE_FONT_SIZE,
+             myDarkGreen);
 
     EndDrawing();
   }

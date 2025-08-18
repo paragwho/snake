@@ -1,2 +1,2 @@
 CompileFlags:
-  Add: [-IE:\Dev\game dev\snake\include, -Wall]
+  Add: [-IE:\dev\games\snake\include, -Wall]
