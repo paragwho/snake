@@ -1,2 +1,0 @@
-CompileFlags:
-  Add: [-IE:\dev\games\snake\include, -Wall]
