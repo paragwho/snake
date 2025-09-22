@@ -60,14 +60,14 @@ class Snake {
   void initializeBody() {
     body.clear();
     for (int i = 0; i < SNAKE_INITIAL_LENGTH; i++) {
-      body.push_back(Vector2Add(SNAKE_INITIAL_POSITION, Vector2Scale(Vector2Negate(SNAKE_INITIAL_DIRECTION), i)));
+      body.push_back(
+          Vector2Add(SNAKE_INITIAL_POSITION,
+                     Vector2Scale(Vector2Negate(SNAKE_INITIAL_DIRECTION), i)));
     }
   }
 
 public:
-  Snake() {
-    initializeBody();
-  }
+  Snake() { initializeBody(); }
 
   void move() {
     body.push_front(Vector2Add(body.front(), direction));

@@ -9,16 +9,15 @@ A simple Snake game written in **C++** using **[raylib](https://www.raylib.com/)
 ## Installation
 You have two options to run the game:
 1. **Build from source**
-    - Clone the repository:
-     ```
-     git clone https://github.com/paragwho/snake.git
-     cd snake
-     ```
-    - Modify the `makefile` according to your OS and compiler.
-    - Run:
-     ```
-     make
-     ```
+   - Clone the repository:
+      ```
+      git clone https://github.com/paragwho/snake.git
+      cd snake
+      ```
+   - Modify the `makefile` according to your OS & compiler and run:
+      ```
+      make
+      ```
 2. **Download release**
    - Grab the latest prebuilt release from the [Releases](https://github.com/paragwho/snake/releases) section *(Windows only)*.
 
