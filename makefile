@@ -2,12 +2,12 @@
 BIN_DIR = bin
 BUILD_DIR = build
 INCLUDE_DIR = include
-LIB_DIR  = lib
+LIB_DIR = lib
 SRC_DIR = src
 
 # Files
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
-OBJ = $(patsubst $(SRC_DIR)/%.cpp, $(BUILD_DIR)/%.o, $(SRC))
+OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 OUT = $(BIN_DIR)/main.exe
 
