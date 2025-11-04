@@ -3,11 +3,13 @@
 
 class Apple {
 public:
-  Apple(Vector2 Position);
-  void draw() const;
-  Vector2 getPosition() const;
-  void setPosition(Vector2 Position);
+  Apple(Vector2 position);
+
+  void Draw() const;
+
+  Vector2 GetPosition() const;
+  void SetPosition(Vector2 position);
 
 private:
-  Vector2 position;
+  Vector2 m_Position;
 };

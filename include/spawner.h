@@ -4,16 +4,16 @@
 #include "snake.h"
 
 namespace Spawner {
-inline Vector2 randomPosition() {
+inline Vector2 RandomPosition() {
   return {(float)GetRandomValue(0, CELL_COUNT - 1),
           (float)GetRandomValue(0, CELL_COUNT - 1)};
 }
 
-inline Vector2 generateValidPosition(Snake &snake) {
-  Vector2 position = randomPosition();
+inline Vector2 GenerateValidPosition(Snake &snake) {
+  Vector2 position = RandomPosition();
   do {
-    position = randomPosition();
-  } while (snake.checkCollisionAt(position));
+    position = RandomPosition();
+  } while (snake.CheckCollisionAt(position));
 
   return position;
 }

@@ -1,23 +1,24 @@
-#include "game.h"
+#include "config.h"
+#include "play_state.h"
+#include "state_manager.h"
 
 int main() {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Snake");
   SetTargetFPS(60);
 
-  Game game;
+  StateManager manager;
+  manager.PushState(std::make_unique<PlayState>());
 
   while (!WindowShouldClose()) {
-    game.update();
+    manager.Update();
 
     BeginDrawing();
     ClearBackground(MY_GREEN);
 
-    game.draw();
+    manager.Draw();
 
     EndDrawing();
   }
 
   CloseWindow();
-
-  return 0;
 }
