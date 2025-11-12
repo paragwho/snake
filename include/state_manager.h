@@ -1,16 +1,12 @@
 #pragma once
+#include "base_state.h"
 #include <memory>
-#include <vector>
+#include <stack>
 
 class BaseState;
 
 class StateManager {
 public:
-  void HandleInput();
-  void Update();
-
-  void Draw();
-
   void PushState(std::unique_ptr<BaseState> state);
   void PopState();
   void ChangeState(std::unique_ptr<BaseState> state);
@@ -18,5 +14,5 @@ public:
   BaseState *GetCurrentState() const;
 
 private:
-  std::vector<std::unique_ptr<BaseState>> m_States;
+  std::stack<std::unique_ptr<BaseState>> m_States;
 };

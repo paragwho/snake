@@ -8,9 +8,8 @@ class PlayState : public BaseState {
 public:
   PlayState();
 
-  void HandleInput() override;
-  void Update() override;
-
+  void HandleInput(Game &game) override;
+  void Update(Game &game) override;
   void Draw() const override;
 
 private:

@@ -5,9 +5,8 @@ class GameOverState : public BaseState {
 public:
   GameOverState(int score);
 
-  void HandleInput() override;
-  void Update() override;
-
+  void HandleInput(Game &game) override;
+  void Update(Game &game) override;
   void Draw() const override;
 
 private:

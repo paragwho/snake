@@ -9,7 +9,6 @@ public:
   void HandleInput();
   void Move();
   void Grow();
-
   void Draw() const;
 
   Vector2 GetHeadPosition() const;

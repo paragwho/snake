@@ -1,5 +1,7 @@
 #include "play_state.h"
 #include "config.h"
+#include "game.h"
+#include "game_over_state.h"
 #include "raymath.h"
 #include "spawner.h"
 
@@ -7,11 +9,11 @@ PlayState::PlayState()
     : m_Snake(), m_Apple(Spawner::GenerateValidPosition(m_Snake)),
       m_MoveSnakeTimer() {}
 
-void PlayState::HandleInput() { m_Snake.HandleInput(); }
+void PlayState::HandleInput(Game &game) { m_Snake.HandleInput(); }
 
-void PlayState::Update() {
+void PlayState::Update(Game &game) {
   if (m_GameOver) {
-    // Change state to
+    game.ChangeState(std::make_unique<GameOverState>(m_Score));
   }
 
   if (m_MoveSnakeTimer.IsTriggered(MOVE_INTERVAL)) {
@@ -30,6 +32,8 @@ void PlayState::Update() {
 }
 
 void PlayState::Draw() const {
+  ClearBackground(MY_GREEN);
+
   m_Apple.Draw();
   m_Snake.Draw();
 

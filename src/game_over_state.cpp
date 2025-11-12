@@ -1,17 +1,21 @@
 #include "game_over_state.h"
 #include "config.h"
+#include "game.h"
+#include "play_state.h"
 
 GameOverState::GameOverState(int score) : m_Score(score) {}
 
-void GameOverState::HandleInput() {
+void GameOverState::HandleInput(Game &game) {
   if (IsKeyPressed(KEY_ENTER)) {
-    // Change state to PlayState
+    game.ChangeState(std::make_unique<PlayState>());
   }
 }
 
-void GameOverState::Update() {}
+void GameOverState::Update(Game &game) {}
 
 void GameOverState::Draw() const {
+  ClearBackground(MY_GREEN);
+
   DrawText("GAME OVER",
            (SCREEN_WIDTH - MeasureText("Game Over", TITLE_FONT_SIZE)) / 2,
            (SCREEN_HEIGHT - TITLE_FONT_SIZE) / 2 - SPACING * 4, TITLE_FONT_SIZE,

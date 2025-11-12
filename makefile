@@ -2,6 +2,7 @@
 BIN_DIR = bin
 BUILD_DIR = build
 INCLUDE_DIR = include
+VENDOR_DIR = vendor
 LIB_DIR = lib
 SRC_DIR = src
 
@@ -13,7 +14,7 @@ OUT = $(BIN_DIR)/main.exe
 
 # Compiler and flags
 CXX = clang++
-CXXFLAGS = -I"$(INCLUDE_DIR)" -O3 -Wall -MMD -MP
+CXXFLAGS = -I"$(INCLUDE_DIR)" -I"$(VENDOR_DIR)" -O3 -Wall -MMD -MP
 LDFLAGS = -L"$(LIB_DIR)" -mwindows -lraylib -lopengl32 -lgdi32 -lwinmm
 
 # Targets
