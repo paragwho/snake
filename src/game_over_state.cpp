@@ -2,6 +2,7 @@
 #include "config.h"
 #include "game.h"
 #include "play_state.h"
+#include <memory>
 
 GameOverState::GameOverState(int score) : m_Score(score) {}
 
@@ -16,19 +17,17 @@ void GameOverState::Update(Game &game) {}
 void GameOverState::Draw() const {
   ClearBackground(MY_GREEN);
 
-  DrawText("GAME OVER",
-           (SCREEN_WIDTH - MeasureText("Game Over", TITLE_FONT_SIZE)) / 2,
-           (SCREEN_HEIGHT - TITLE_FONT_SIZE) / 2 - SPACING * 4, TITLE_FONT_SIZE,
+  const char *text = "GAME OVER";
+  DrawText(text, (SCREEN_WIDTH - MeasureText(text, TITLE_FONT_SIZE)) / 2,
+           (SCREEN_HEIGHT - TITLE_FONT_SIZE) / 2 - CELL_SIZE, TITLE_FONT_SIZE,
            MY_DARK_GREEN);
 
-  DrawText("Press Enter to play again",
-           (SCREEN_WIDTH -
-            MeasureText("Press Enter to play again", INSTRUCTION_FONT_SIZE)) /
-               2,
-           (SCREEN_HEIGHT - INSTRUCTION_FONT_SIZE) / 2 + SPACING * 4,
+  text = "Press Enter to play again";
+  DrawText(text, (SCREEN_WIDTH - MeasureText(text, INSTRUCTION_FONT_SIZE)) / 2,
+           (SCREEN_HEIGHT - INSTRUCTION_FONT_SIZE) / 2 + CELL_SIZE,
            INSTRUCTION_FONT_SIZE, MY_DARK_GREEN);
 
-  const char *scoreText = TextFormat("Score: %i", m_Score);
-  DrawText(scoreText, CELL_SIZE, CELL_SIZE * (CELL_COUNT - 2), SCORE_FONT_SIZE,
-           MY_DARK_GREEN);
+  text = TextFormat("Score: %i", m_Score);
+  DrawText(text, SCREEN_WIDTH - CELL_SIZE - SCORE_FONT_SIZE, CELL_SIZE,
+           SCORE_FONT_SIZE, MY_DARK_GREEN);
 }

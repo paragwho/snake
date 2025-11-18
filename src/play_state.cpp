@@ -2,8 +2,10 @@
 #include "config.h"
 #include "game.h"
 #include "game_over_state.h"
+#include "raylib.h"
 #include "raymath.h"
 #include "spawner.h"
+#include <memory>
 
 PlayState::PlayState()
     : m_Snake(), m_Apple(Spawner::GenerateValidPosition(m_Snake)),
@@ -37,9 +39,9 @@ void PlayState::Draw() const {
   m_Apple.Draw();
   m_Snake.Draw();
 
-  const char *scoreText = TextFormat("%i", m_Score);
-  DrawText(scoreText, CELL_SIZE, CELL_SIZE * (CELL_COUNT - 2), SCORE_FONT_SIZE,
-           MY_DARK_GREEN);
+  const char *text = TextFormat("%i", m_Score);
+  DrawText(text, SCREEN_WIDTH - CELL_SIZE - SCORE_FONT_SIZE, CELL_SIZE,
+           SCORE_FONT_SIZE, MY_DARK_GREEN);
 }
 
 bool PlayState::IsAppleEaten(Apple &apple, Snake &snake) {
