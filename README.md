@@ -1,7 +1,7 @@
 # Snake
 A simple Snake game written in **C++** using **[raylib](https://www.raylib.com/)**.
 
-![Snake GIF(snake.gif)
+<img src="./snake.gif"/>
 
 ## Features
 - Classic Snake gameplay
@@ -32,3 +32,4 @@ You have two options to run the game:
 
 ## License
 This project is licensed under the [MIT License](LICENSE).
+
