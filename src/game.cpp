@@ -1,6 +1,6 @@
-#include "game.h"
-#include "config.h"
-#include "play_state.h"
+#include "game.hpp"
+#include "config.hpp"
+#include "play_state.hpp"
 
 void Game::Run() {
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_NAME);

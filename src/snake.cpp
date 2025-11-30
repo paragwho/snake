@@ -1,5 +1,6 @@
-#include "snake.h"
-#include "config.h"
+#include "snake.hpp"
+#include "config.hpp"
+#include "raylib.h"
 #include "raymath.h"
 
 Snake::Snake() : m_Direction(SNAKE_INITIAL_DIRECTION) {
@@ -43,8 +44,9 @@ void Snake::Grow() { m_Body.push_back(m_Body.back()); }
 
 void Snake::Draw() const {
   for (int i = 0; i < m_Body.size(); i++) {
-    DrawRectangle(m_Body[i].x * CELL_SIZE, m_Body[i].y * CELL_SIZE, CELL_SIZE,
-                  CELL_SIZE, MY_DARK_GREEN);
+    Rectangle bodySegment = {m_Body[i].x * CELL_SIZE, m_Body[i].y * CELL_SIZE,
+                             CELL_SIZE, CELL_SIZE};
+    DrawRectangleRounded(bodySegment, 0.5f, 8, MY_DARK_GREEN);
   }
 }
 
@@ -60,8 +62,10 @@ bool Snake::CheckSelfCollision() const {
 }
 
 bool Snake::CheckBoundaryCollision() const {
-  return (GetHeadPosition().x < 0 || GetHeadPosition().x > CELL_COUNT - 1 ||
-          GetHeadPosition().y < 0 || GetHeadPosition().y > CELL_COUNT - 1);
+  return (GetHeadPosition().x < BORDER_GAP_CELLS ||
+          GetHeadPosition().x > CELL_COUNT - BORDER_GAP_CELLS - 1 ||
+          GetHeadPosition().y < BORDER_GAP_CELLS ||
+          GetHeadPosition().y > CELL_COUNT - BORDER_GAP_CELLS - 1);
 }
 
 bool Snake::CheckCollisionAt(Vector2 position) const {

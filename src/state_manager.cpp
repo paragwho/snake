@@ -1,4 +1,5 @@
-#include "state_manager.h"
+#include "state_manager.hpp"
+#include <utility>
 
 void StateManager::PushState(std::unique_ptr<BaseState> state) {
   m_States.push(std::move(state));

@@ -1,11 +1,13 @@
-#include "apple.h"
-#include "config.h"
+#include "apple.hpp"
+#include "config.hpp"
+#include "raylib.h"
 
 Apple::Apple(Vector2 position) : m_Position(position) {}
 
 void Apple::Draw() const {
-  DrawRectangle(CELL_SIZE * m_Position.x, CELL_SIZE * m_Position.y, CELL_SIZE,
-                CELL_SIZE, RED);
+  Vector2 appleCenter = {CELL_SIZE * m_Position.x + CELL_SIZE / 2,
+                         CELL_SIZE * m_Position.y + CELL_SIZE / 2};
+  DrawCircleV(appleCenter, CELL_SIZE / 2, RED);
 }
 
 Vector2 Apple::GetPosition() const { return m_Position; }

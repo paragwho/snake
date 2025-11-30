@@ -2,20 +2,19 @@
 BIN_DIR = bin
 BUILD_DIR = build
 INCLUDE_DIR = include
-VENDOR_DIR = vendor
-LIB_DIR = lib
 SRC_DIR = src
 
 # Files
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
-OUT = $(BIN_DIR)/main.exe
+OUT = $(BIN_DIR)/snake
 
 # Compiler and flags
-CXX = clang++
-CXXFLAGS = -I"$(INCLUDE_DIR)" -I"$(VENDOR_DIR)" -O3 -Wall -MMD -MP
-LDFLAGS = -L"$(LIB_DIR)" -mwindows -lraylib -lopengl32 -lgdi32 -lwinmm
+CXX = g++
+CXXFLAGS = -I"$(INCLUDE_DIR)" -O2 -Wall -MMD -MP
+CXXFLAGS += $(shell pkg-config --cflags raylib)
+LDFLAGS = $(shell pkg-config --libs raylib)
 
 # Targets
 .PHONY: all clean run
@@ -30,16 +29,15 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
 
 # Create directories if missing
 $(BIN_DIR):
-	mkdir $@
+	mkdir -p $@
 
 $(BUILD_DIR):
-	mkdir $@
+	mkdir -p $@
 
-# Clean artifacts and executable
+# Clean artifacts and executables
 clean:
-	del $(subst /,\,$(OUT))
-	del $(subst /,\,$(OBJ))
-	del $(subst /,\,$(DEP))
+	rm -f $(OUT) $(OBJ) $(DEP)
+	rm -rf $(BIN_DIR) $(BUILD_DIR)
 
 # Run the game
 run: $(OUT)
