@@ -1,6 +1,8 @@
 # Snake
 A simple Snake game written in **C++** using **[raylib](https://www.raylib.com/)**.
 
+![Snake GIF(snake.gif)
+
 ## Features
 - Classic Snake gameplay
 - Scoring system
